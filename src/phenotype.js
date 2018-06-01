@@ -23,17 +23,13 @@ class Phenotype {
             else 
                 this.numOfSides = options.numOfSides ? options.numOfSides : MaxNumOfSides;
             
-            this._generate();
+            this._generate(options.numOfPolygons);
         }
     }
     
     computeFitness(goalCtx, workingCtx) {
-		const previousWorkingImageData = workingCtx.getImageData(0, 0, this.width, this.height);
-        
-		for(var i = 0; i < this.genotype.length; i++) {
-			const p = this.genotype[i];
-			Helpers.Apply(workingCtx, p);
-		}
+        console.time('compute fitness');
+        Helpers.ApplyPhenotype(workingCtx, this);
         
         const subsetGoalImageData = goalCtx.getImageData(0, 0, this.width, this.height);
         const subsetWorkingImageData = workingCtx.getImageData(0, 0, this.width, this.height);
@@ -44,46 +40,43 @@ class Phenotype {
             totalError += error;
         }
         
-        Helpers.Revert(workingCtx, previousWorkingImageData);
+        Helpers.Clear(workingCtx, this.width, this.height);
         
         this.score = totalError;
+        console.timeEnd('compute fitness');
     }
     
-    breed(other, fittest) {
-        // experimenting with using most fit genotype in children
-        // Note: This may lead to homogenous population very quickly!
+    breed(other) {
+        console.time('breed');
         
-        console.log('this genotype');
-        console.log(this.genotype);
-        
-        console.log('concat');
-        console.log(fittest.genotype.concat(this.genotype));
-        
-        let child1geno = Helpers.Clone(fittest.genotype.concat(this.genotype));
-        let child2geno = Helpers.Clone(fittest.genotype.concat(other.genotype));
+        console.time('init clone');
+        let child1geno = this.genotype;
+        let child2geno = other.genotype;
         const crossoverIndex = Helpers.RandomInteger(0, child1geno.length);
+        console.timeEnd('init clone');
         
-        console.log('child1geno');        
-        console.log(child1geno);
-        
+        console.time('crossover');
         // Swap the polygons
         for(var i = 0; i < crossoverIndex; i++) {
-            const tempC1 = Helpers.Clone(child1geno[i]);
-            child1geno[i] = Helpers.Clone(child2geno[i]);
+            const tempC1 = child1geno[i];
+            child1geno[i] = child2geno[i];
             child2geno[i] = tempC1;
         }
+        console.timeEnd('crossover');
         
+        console.time('mutate');
         for(var i = 0; i < child1geno.length; i++) {
             child1geno[i].tryMutate();
 			child2geno[i].tryMutate();
         }
+        console.timeEnd('mutate');
         
-        console.log('child1geno end');   
-        console.log(child1geno);
-        
+        console.time('assign');
         const child1 = new Phenotype({ index: this.index, generation: (this.generation + 1), width: this.width, height: this.height, genotype: child1geno });
         const child2 = new Phenotype({ index: other.index, generation: (other.generation + 1), width: this.width, height: this.height, genotype: child2geno });
+        console.timeEnd('assign');
         
+        console.timeEnd('breed');
         return [child1, child2]
     }
     
@@ -98,8 +91,10 @@ class Phenotype {
         return clonedGeno;
     }
     
-    _generate() {
-        this.genotype = [new Polygon(this.numOfSides, this.width, this.height)];
+    _generate(numOfPolygons) {
+        for (var i = 0; i < numOfPolygons; i++) {        
+            this.genotype.push(new Polygon(this.numOfSides, this.width, this.height));
+        }
     }
 }
 

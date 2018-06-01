@@ -2,10 +2,12 @@ import Point from './point.js'
 import Helpers from './helpers.js'
 
 const MinRadius = 25;
-const MutationChance = 0.07;
-const VerticesMutationStep = 5;
-const ColorMutationStep = 15;
-const AlphaMutationStep = 0.3;
+const MutationChance = 0.05; //0.07
+const VerticesMutationStep = 1; //5
+const ColorMutationStep = 5; //15
+const AlphaMutationStep = 0.1; //0.3
+const MaxColor = 255;
+const MaxAlpha = 1;
 
 class Polygon {
     constructor(numOfSides, maxWidth, maxHeight) {
@@ -15,6 +17,8 @@ class Polygon {
         this.numOfSides = numOfSides;
         this.radius = new Point(Helpers.RandomNumber(MinRadius, (maxWidth / 2)), Helpers.RandomNumber(MinRadius, (maxHeight / 2)));
         this.center = this._getRandomCenterPoint(maxWidth, maxHeight);
+        this.maxWidth = maxWidth;
+        this.maxHeight = maxHeight;
         
         this._randomize();
     }
@@ -28,8 +32,10 @@ class Polygon {
             if (Math.random() < MutationChance) {
 				if (Math.random() < 0.5) {
 					this.vertices[i].X += Math.random() < 0.5 ? VerticesMutationStep : -VerticesMutationStep;
+                    this.vertices[i].X = Helpers.Clamp(this.vertices[i].X, MinRadius, this.maxWidth);
 				} else {
 					this.vertices[i].Y += Math.random() < 0.5 ? VerticesMutationStep : -VerticesMutationStep;
+                    this.vertices[i].Y = Helpers.Clamp(this.vertices[i].Y, MinRadius, this.maxHeight);
 				}
 			}
         }
@@ -37,17 +43,19 @@ class Polygon {
 		for (var i = 0; i < this.color.length - 1; i++) {
 			if (Math.random() < MutationChance) {
 				this.color[i] += Math.random() < 0.5 ? ColorMutationStep : -ColorMutationStep;
+                this.color[i] = Helpers.Clamp(this.color[i], 0, 255);
 			}
 		}
 		
 		if (Math.random() < MutationChance) {
 			this.color[3] += Math.random() < 0.5 ? AlphaMutationStep : -AlphaMutationStep;
+            this.color[3] = Helpers.Clamp(this.color[3], 0, 1);
 		}
     }
     
     _randomize() {
         this.vertices = this._createRandomVertices();
-		this.color = this._createRandomColor();
+		this.color = this._createRandomColor(100);
         this.boundingBox = this._getBoundingBox();
     }
     
@@ -63,8 +71,17 @@ class Polygon {
         return new Point(x, y);
     }
     
-	_createRandomColor() {
-        let c = []
+    _createRandomColor(co) {
+        let c = [];
+        c[0] = co;
+        c[1] = co;
+        c[2] = co;
+        c[3] = Helpers.RandomNumber(0.5, 0.5);
+        return c;
+    }
+    
+	_createRandomColor2() {
+        let c = [];
 		c[0] = Helpers.RandomInteger(0, 255);
         c[1] = Helpers.RandomInteger(0, 255);
         c[2] = Helpers.RandomInteger(0, 255);

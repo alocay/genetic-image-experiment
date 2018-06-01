@@ -19,7 +19,6 @@ class GenAlgo {
         this.population.scoreAll(goalCtx, workingCtx);
         
         const fittest = this.population.getFittest();
-        console.log(fittest.genotype);
         Helpers.ApplyPhenotype(fittestCtx, fittest);
         
         let newGen = [];
@@ -27,7 +26,7 @@ class GenAlgo {
             const p1 = this.population.selectRandScores();
             const p2 = this.population.selectRandScores(p1.id);
             
-            const children = p1.breed(p2, fittest);
+            const children = p1.breed(p2);
             
             newGen.push(children[0]);
             newGen.push(children[1]);

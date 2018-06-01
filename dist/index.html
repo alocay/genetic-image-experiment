@@ -26,7 +26,7 @@
                 genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                 
                 function runAlgoStep() {
-                    if (genalgo.getCurrentGeneration() < 5) {
+                    if (genalgo.getCurrentGeneration() < 1000) {
                         let polys = genalgo.runOnce(goalCtx, workingCtx, fittestCtx);
                         genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                         polyDiv.text("Polys: " + polys);

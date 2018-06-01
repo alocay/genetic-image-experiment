@@ -20,7 +20,7 @@ class Helpers {
     }
     
     static ApplyPhenotype(ctx, phenotype) {
-        ctx.clearRect(0, 0, phenotype.width, phenotype.height);
+        this.Clear(ctx, phenotype.width, phenotype.height);
         
         for(var i = 0; i < phenotype.genotype.length; i++) {
 			const p = phenotype.genotype[i];
@@ -28,13 +28,14 @@ class Helpers {
 		}
     }
     
+    static Clear(ctx, width, height) {
+        ctx.clearRect(0, 0, width, height);
+    }
+    
     static ApplyAndCompare(goalCtx, workingCtx, phenotype) {
         const previousWorkingImageData = workingCtx.getImageData(0, 0, phenotype.width, phenotype.height);
         
-		for(var i = 0; i < phenotype.genotype.length; i++) {
-			const p = phenotype.genotype[i];
-			this.Apply(workingCtx, p);
-		}
+        this.ApplyPhenotype(workingCtx, phenotype);
         
         const subsetGoalImageData = goalCtx.getImageData(0, 0, phenotype.width, phenotype.height);
         const subsetWorkingImageData = workingCtx.getImageData(0, 0, phenotype.width, phenotype.height);
@@ -48,6 +49,10 @@ class Helpers {
         this.Revert(workingCtx, previousWorkingImageData);
         
         return totalError;
+    }
+    
+    static Clamp(value, min, max) {
+        return Math.max(Math.min(value, max), min);
     }
 	
     static RandomNumber(min, max) {

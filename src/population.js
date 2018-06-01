@@ -39,6 +39,7 @@ class Population {
     
     getFittest() {
 		this.population.sort(this._compareForFittest);
+        
 		return this.population[0];
     }
     
@@ -52,8 +53,8 @@ class Population {
     }
     
 	_compareForFittest(a, b) {
-		if (a.score < b.score) return 1;
-		if (a.score > b.score) return -1;
+		if (a.score > b.score) return 1;
+		if (a.score < b.score) return -1;
 		return 0;
 	}
 	
@@ -61,6 +62,7 @@ class Population {
         for(var i = 0; i < this.size; i++) {
 			options.index = i;
 			options.generation = this.generation;
+            options.numOfPolygons = 50;
             this.population.push(new Phenotype(options));
         }
     }    
