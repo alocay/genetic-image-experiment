@@ -1,5 +1,46 @@
+'use strict' 
 
 class Helpers {
+	static Apply(ctx, polygon) {
+        ctx.fillStyle = polygon.getFillStyle();
+        ctx.beginPath();
+        
+        ctx.moveTo(polygon.vertices[0].X, genotype.vertices[0].Y);
+        
+        for(var i = 2; i < (polygon.vertices.length); i+=2) {
+            ctx.lineTo(polygon.vertices[i].X, polygon.vertices[i].Y);
+        }
+        
+        ctx.closePath();
+        ctx.fill();
+    }
+    
+    static Revert(ctx, previousImgData) {
+        ctx.putImageData(previousImgData, 0, 0);
+    }
+    
+    static ApplyAndCompare(goalCtx, workingCtx, phenotype) {
+        const previousWorkingImageData = workingCtx.getImageData(0, 0, phenotype.width, phenotype.height);
+        
+		for(var i = 0; i < phenotype.genotype.length; i++) {
+			const p = phenotype.genotype[i];
+			this.Apply(workingCtx, p);
+		}
+        
+        const subsetGoalImageData = goalCtx.getImageData(0, 0, phenotype.width, phenotype.height);
+        const subsetWorkingImageData = workingCtx.getImageData(0, 0, phenotype.width, phenotype.height);
+        
+        let totalError = 0;
+        for (var i = 0; i < subsetGoalImageData.data.length; i++) {
+            const error = Math.abs(subsetGoalImageData.data[i] - subsetWorkingImageData.data[i]);
+            totalError += error;
+        }
+        
+        this.Revert(workingCtx, previousWorkingImageData);
+        
+        return totalError;
+    }
+	
     static RandomNumber(min, max) {
         return Math.random() * (max - min) + min;
     }

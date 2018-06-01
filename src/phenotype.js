@@ -6,6 +6,9 @@ const MutationChance = 0.07;
 class Phenotype {
     constructor(options) {
         this.score = null;
+		this.generation = options.generation;
+		this.index = options.index;
+		this.id = Helpers.RandomInteger(1, 10000) + "_" + this.generation + "_" this.index;
         
         if (options.genotype) {
             this.genotype = options.genotype;
@@ -24,7 +27,26 @@ class Phenotype {
         }
     }
     
-    score() {
+    score(goalCtx, workingCtx) {
+		const previousWorkingImageData = workingCtx.getImageData(0, 0, this.width, this.height);
+        
+		for(var i = 0; i < this.genotype.length; i++) {
+			const p = this.genotype[i];
+			Helpers.Apply(workingCtx, p);
+		}
+        
+        const subsetGoalImageData = goalCtx.getImageData(0, 0, this.width, this.height);
+        const subsetWorkingImageData = workingCtx.getImageData(0, 0, this.width, this.height);
+        
+        let totalError = 0;
+        for (var i = 0; i < subsetGoalImageData.data.length; i++) {
+            const error = Math.abs(subsetGoalImageData.data[i] - subsetWorkingImageData.data[i]);
+            totalError += error;
+        }
+        
+        Helpers.Revert(workingCtx, previousWorkingImageData);
+        
+        this.score = totalError;
     }
     
     breed(other, fittest) {
@@ -40,14 +62,14 @@ class Phenotype {
             child1geno[i] = Helpers.clone(child2geno[i]);
             child2geno[i] = tempC1;
         }
-        
+		
         for(var i = 0; i < child1geno.length; i++) {
-            if (Math.random() < MutationChance) child1geno[i].mutate();
-            if (Math.random() < MutationChance) child2geno[i].mutate();
+            child1geno[i].tryMutate();
+			child2geno[i].tryMutate();
         }
         
-        const child1 = new Phenotype({ genotype: child1geno });
-        const child2 = new Phenotype({ genotype: child2geno });
+        const child1 = new Phenotype({ index: this.index, generation: (this.generation + 1), genotype: child1geno });
+        const child2 = new Phenotype({ index: other.index, generation: (other.generation + 1), genotype: child2geno });
         
         return [child1, child2]
     }

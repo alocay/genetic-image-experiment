@@ -16,7 +16,7 @@ class GenAlgo {
         let newGen = [];
         for(var i = 0; i < this.size; i+=2) {
             const p1 = this.population.select();
-            const p2 = this.population.select(p1);
+            const p2 = this.population.select(p1.id);
             
             const children = p1.breed(p2, fittest);
             
