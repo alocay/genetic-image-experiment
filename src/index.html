@@ -1,41 +1,45 @@
 <html>
     <head>
-    <script src="jquery-3.3.1.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            const genDiv = $("#gen");
-            const goalCtx = $("#goal")[0].getContext("2d");
-            const workingCtx = $("#working")[0].getContext("2d");
-            let count = 0;
-            
-            goalCtx.fillStyle = '#ff0000';
-            goalCtx.beginPath();
-            
-            goalCtx.moveTo(10, 30);
-            goalCtx.lineTo(60, 30);
-            goalCtx.lineTo(60, 90);
-            goalCtx.lineTo(10, 90);
-            
-            goalCtx.closePath();
-            goalCtx.fill();
-            
-            const genalgo = new GenAlgo(500, goalCtx, workingCtx, 6, 120, 120);
-            
-            function runAlgoStep() {                
-                if (count < 10000) {
-                    count = genalgo.runOnce();
-                    genDiv.text("Gen: " + count);
-                    window.requestAnimationFrame(runAlgoStep);
+        <script src="jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="bundle.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                const genDiv = $("#gen");
+                const goalCtx = $("#goal")[0].getContext("2d");
+                const workingCtx = $("#working")[0].getContext("2d");
+                const fittestCtx = $("#fittest")[0].getContext("2d");
+                let count = 1;
+                
+                goalCtx.fillStyle = '#ff0000';
+                goalCtx.beginPath();
+                
+                goalCtx.moveTo(10, 30);
+                goalCtx.lineTo(60, 30);
+                goalCtx.lineTo(60, 90);
+                goalCtx.lineTo(10, 90);
+                
+                goalCtx.closePath();
+                goalCtx.fill();
+                
+                const genalgo = GenAlgo.NewGenAlgo(100, 120, 120);
+                genDiv.text("Gen: " + genalgo.getCurrentGeneration());
+                
+                function runAlgoStep() {
+                    if (genalgo.getCurrentGeneration() < 5) {
+                        genalgo.runOnce(goalCtx, workingCtx, fittestCtx);
+                        genDiv.text("Gen: " + genalgo.getCurrentGeneration());
+                        window.requestAnimationFrame(runAlgoStep);
+                    }
                 }
-            }
-            
-            //window.requestAnimationFrame(runAlgoStep);
-        });
-    </script>
+                
+                window.requestAnimationFrame(runAlgoStep);
+            });
+        </script>
 	</head>
 
 	<body>
 		<canvas id="goal" width="120" height="120"></canvas>
+        <canvas id="fittest" width="120" height="120" style="border:1px solid #000000;"></canvas>
 		<canvas id="working" width="120" height="120" style="border:1px solid #000000;"></canvas>
 		<div id="gen"></div>
 	</body>

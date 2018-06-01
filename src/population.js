@@ -1,16 +1,16 @@
+import Phenotype from './phenotype.js';
+
 class Population {
     constructor(size, phenotypeOptions) {
         this.size = size;
         this.population = [];
 		this.generation = 1;
-		this.goalCtx = goalCtx;
-		this.workingCtx = workingCtx;
         this._generate(phenotypeOptions || {});
     }
     
-    scoreAll() {
+    scoreAll(goalCtx, workingCtx) {
         for(var i = 0; i < this.size; i++) {
-            this.population[i].score(goalCtx workingCtx);
+            this.population[i].computeFitness(goalCtx, workingCtx);
         }
     }
     
@@ -47,6 +47,10 @@ class Population {
 		this.generation++;
     }
     
+    getNumOfPolygons() {
+        return this.population[0].genotype.length;
+    }
+    
 	_compareForFittest(a, b) {
 		if (a.score < b.score) return 1;
 		if (a.score > b.score) return -1;
@@ -61,3 +65,5 @@ class Population {
         }
     }    
 }
+
+export default Population;

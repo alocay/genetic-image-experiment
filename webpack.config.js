@@ -5,7 +5,9 @@ module.exports = {
     entry: path.join(__dirname, "src/index.js"),
     output: {
         path: path.join(__dirname, "dist"),
-        filename: "bundle.js"
+        filename: "bundle.js",
+        libraryTarget: 'var',
+        library: 'GenAlgo'
     },
     module: {
         rules: [
@@ -24,11 +26,12 @@ module.exports = {
             }
         ]
     },
-    plugins: [
+    /*plugins: [
         new HtmlWebpackPlugin({
-            template: path.join(__dirname, "src/index.html")
+            template: path.join(__dirname, "src/index.html"),
+            inject: 'head'
         })
-    ],
+    ],*/
     resolve: {
         extensions: [".js", ".jsx"]
     },

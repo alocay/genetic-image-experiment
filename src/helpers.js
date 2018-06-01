@@ -5,7 +5,7 @@ class Helpers {
         ctx.fillStyle = polygon.getFillStyle();
         ctx.beginPath();
         
-        ctx.moveTo(polygon.vertices[0].X, genotype.vertices[0].Y);
+        ctx.moveTo(polygon.vertices[0].X, polygon.vertices[0].Y);
         
         for(var i = 2; i < (polygon.vertices.length); i+=2) {
             ctx.lineTo(polygon.vertices[i].X, polygon.vertices[i].Y);
@@ -17,6 +17,15 @@ class Helpers {
     
     static Revert(ctx, previousImgData) {
         ctx.putImageData(previousImgData, 0, 0);
+    }
+    
+    static ApplyPhenotype(ctx, phenotype) {
+        ctx.clearRect(0, 0, phenotype.width, phenotype.height);
+        
+        for(var i = 0; i < phenotype.genotype.length; i++) {
+			const p = phenotype.genotype[i];
+			this.Apply(ctx, p);
+		}
     }
     
     static ApplyAndCompare(goalCtx, workingCtx, phenotype) {
@@ -51,14 +60,17 @@ class Helpers {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     
-    static  Clone(o) {
-    var out = Array.isArray(o) ? [] : {};
-    
-    for (var key in o) {
-        var v = o[key];
-        out[key] = (typeof v === "object") ? copy(v) : v;
+    static Clone(o) {
+        if (o === null) return null
+        var out = Array.isArray(o) ? [] : Object.create(o);
+        
+        for (var key in o) {
+            var v = o[key];
+            out[key] = (typeof v === "object") ? this.Clone(v) : v;
+        }
+        
+        return out;
     }
-    
-    return out;
-  }
 }
+
+export default Helpers;

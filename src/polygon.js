@@ -1,4 +1,4 @@
-import Point from './Point.js'
+import Point from './point.js'
 import Helpers from './helpers.js'
 
 const MinRadius = 25;
@@ -13,8 +13,8 @@ class Polygon {
 		this.color = [];
         this.boundingBox = [];
         this.numOfSides = numOfSides;
-        this.radius = new Point(Helpers.RandomNumber(MinRadius, (maxWidth / 2)), Helpers.RandomNumber(MinRadius, (maxHeight / 2));
-        this.center = new Point(0, 0);
+        this.radius = new Point(Helpers.RandomNumber(MinRadius, (maxWidth / 2)), Helpers.RandomNumber(MinRadius, (maxHeight / 2)));
+        this.center = this._getRandomCenterPoint(maxWidth, maxHeight);
         
         this._randomize();
     }
@@ -51,11 +51,25 @@ class Polygon {
         this.boundingBox = this._getBoundingBox();
     }
     
+    _getRandomCenterPoint(width, height) {
+        const center = new Point(width/2, height/2);
+        const minx = 0 + this.radius.X;
+        const maxx = width - this.radius.X;
+        const miny = 0 + this.radius.Y;
+        const maxy = height - this.radius.Y;
+        const x = Helpers.RandomInteger(minx, maxx);
+        const y = Helpers.RandomInteger(miny, maxy);        
+        
+        return new Point(x, y);
+    }
+    
 	_createRandomColor() {
-		this.color[0] = Helpers.RandomInteger(0, 255);
-        this.color[1] = Helpers.RandomInteger(0, 255);
-        this.color[2] = Helpers.RandomInteger(0, 255);
-        this.color[3] = Helpers.RandomNumber(0, 1);
+        let c = []
+		c[0] = Helpers.RandomInteger(0, 255);
+        c[1] = Helpers.RandomInteger(0, 255);
+        c[2] = Helpers.RandomInteger(0, 255);
+        c[3] = Helpers.RandomNumber(0, 1);
+        return c;
 	}
 	
     _createRandomVertices() {
@@ -100,3 +114,5 @@ class Polygon {
         return [new Point(xMin, yMin), width, height];
     }
 }
+
+export default Polygon;
