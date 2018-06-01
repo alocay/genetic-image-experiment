@@ -5,6 +5,7 @@ class Population {
         this.size = size;
         this.population = [];
 		this.generation = 1;
+		this.probabilitiesCalced = false;
         this._generate(phenotypeOptions || {});
     }
     
@@ -14,7 +15,23 @@ class Population {
         }
     }
     
-	selectRoulette() {
+	selectRoulette(excludedId) {
+		this._calculateRouletteProbabilities();
+		
+		const prob = Math.random();
+		for(var i = 0; i < this.population.length; i++) {
+			if ((i+1) === this.population.length) {
+				return this.population[i];
+			}
+			
+			if (prob > this.population[i].probability && prob < this.population[i+1].probability) {
+				if (this.population[i].id === excludedId) {
+					return this.population[i+1];
+				} else {
+					return this.population[i];
+				}
+			}
+		}
 	}
 	
     selectRandScores(excludedId) {
@@ -45,6 +62,7 @@ class Population {
     
     nextGeneration(gen) {
         this.population = gen;
+		this.probabilitiesCalced = false;
 		this.generation++;
     }
     
@@ -52,6 +70,31 @@ class Population {
         return this.population[0].genotype.length;
     }
     
+	_calculateRouletteProbabilities() {
+		if (!this.probabilitiesCalced) {
+			let scoreSum = 0;
+			let probabilitySum = 0;
+			for(var i = 0; i < this.population.length; i++) {
+				scoreSum += this.population[i].score;
+			}
+			
+			for(var i = 0; i < this.population.length; i++) {
+				const probability = probabilitySum + (this.population[i].score / scoreSum);
+				probabilitySum += probability;
+				this.population[i].probability = probability;
+			}
+			
+			this.population.sort(this._compareForProbability);
+			this.probabilitiesCalced = true;
+		}
+	}
+	
+	_compareForProbability(a, b) {
+		if (a.probability < b.probability) return 1;
+		if (a.probability > b.probability) return -1;
+		return 0;
+	}
+	
 	_compareForFittest(a, b) {
 		if (a.score > b.score) return 1;
 		if (a.score < b.score) return -1;

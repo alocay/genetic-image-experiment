@@ -23,8 +23,8 @@ class GenAlgo {
         
         let newGen = [];
         for(var i = 0; i < this.size; i+=2) {
-            const p1 = this.population.selectRandScores();
-            const p2 = this.population.selectRandScores(p1.id);
+            const p1 = this.population.selectRoulette();
+            const p2 = this.population.selectRoulette(p1.id);
             
             const children = p1.breed(p2);
             

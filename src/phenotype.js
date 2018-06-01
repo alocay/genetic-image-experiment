@@ -7,6 +7,7 @@ const MutationChance = 0.07;
 class Phenotype {
     constructor(options) {
         this.score = null;
+		this.probability = 0;
 		this.generation = options.generation;
 		this.index = options.index;
 		this.id = Helpers.RandomInteger(1, 10000) + "_" + this.generation + "_" + this.index;
@@ -28,7 +29,6 @@ class Phenotype {
     }
     
     computeFitness(goalCtx, workingCtx) {
-        console.time('compute fitness');
         Helpers.ApplyPhenotype(workingCtx, this);
         
         const subsetGoalImageData = goalCtx.getImageData(0, 0, this.width, this.height);
@@ -42,41 +42,29 @@ class Phenotype {
         
         Helpers.Clear(workingCtx, this.width, this.height);
         
-        this.score = totalError;
-        console.timeEnd('compute fitness');
+        this.score = totalError > 0 ? (1 / totalError) : Number.MAX_VALUE;
     }
     
     breed(other) {
-        console.time('breed');
-        
-        console.time('init clone');
         let child1geno = this.genotype;
         let child2geno = other.genotype;
         const crossoverIndex = Helpers.RandomInteger(0, child1geno.length);
-        console.timeEnd('init clone');
-        
-        console.time('crossover');
+		
         // Swap the polygons
         for(var i = 0; i < crossoverIndex; i++) {
             const tempC1 = child1geno[i];
             child1geno[i] = child2geno[i];
             child2geno[i] = tempC1;
         }
-        console.timeEnd('crossover');
         
-        console.time('mutate');
         for(var i = 0; i < child1geno.length; i++) {
             child1geno[i].tryMutate();
 			child2geno[i].tryMutate();
         }
-        console.timeEnd('mutate');
-        
-        console.time('assign');
+		
         const child1 = new Phenotype({ index: this.index, generation: (this.generation + 1), width: this.width, height: this.height, genotype: child1geno });
         const child2 = new Phenotype({ index: other.index, generation: (other.generation + 1), width: this.width, height: this.height, genotype: child2geno });
-        console.timeEnd('assign');
         
-        console.timeEnd('breed');
         return [child1, child2]
     }
     
