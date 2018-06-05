@@ -6,7 +6,9 @@
             $(document).ready(function() {
                 const genDiv = $("#gen");
                 const polyDiv = $("#poly");
+                const genpDiv = $("#genp");
                 const goalCtx = $("#goal")[0].getContext("2d");
+                const testCtx = $("#test")[0].getContext("2d");
                 const workingCtx = $("#working")[0].getContext("2d");
                 const fittestCtx = $("#fittest")[0].getContext("2d");
                 let count = 1;
@@ -25,8 +27,12 @@
                 const genalgo = GenAlgo.NewGenAlgo(100, 120, 120);
                 genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                 
+                genpDiv.click(function() {
+                    genalgo.testPoly(testCtx);
+                });
+                
                 function runAlgoStep() {
-                    if (genalgo.getCurrentGeneration() < 1000) {
+                    if (genalgo.getCurrentGeneration() < 3000) {
                         let polys = genalgo.runOnce(goalCtx, workingCtx, fittestCtx);
                         genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                         polyDiv.text("Polys: " + polys);
@@ -34,15 +40,18 @@
                     }
                 }
                 
+                genalgo.testPoly(testCtx);
                 window.requestAnimationFrame(runAlgoStep);
             });
         </script>
     </head>
 	<body>
-		<canvas id="goal" width="120" height="120"></canvas>
+		<canvas id="goal" width="120" height="120" style="border:1px solid #000000;"></canvas>
         <canvas id="fittest" width="120" height="120" style="border:1px solid #000000;"></canvas>
 		<canvas id="working" width="120" height="120" style="border:1px solid #000000;"></canvas>
+        <canvas id="test" width="120" height="120" style="border:1px solid #000000;"></canvas>
 		<div id="gen"></div>
         <div id="poly"></div>
+        <div id="genp">Generate</div>
 	</body>
 </html>

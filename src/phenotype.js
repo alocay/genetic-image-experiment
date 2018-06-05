@@ -2,7 +2,6 @@ import Polygon from './polygon.js';
 import Helpers from './helpers.js';
 
 const MaxNumOfSides = 10;
-const MutationChance = 0.07;
 
 class Phenotype {
     constructor(options) {
@@ -13,6 +12,7 @@ class Phenotype {
 		this.id = Helpers.RandomInteger(1, 10000) + "_" + this.generation + "_" + this.index;
         this.width = options.width;
         this.height = options.height;
+        this.mutationChance = 0.001;
         
         if (options.genotype) {
             this.genotype = options.genotype;
@@ -35,9 +35,12 @@ class Phenotype {
         const subsetWorkingImageData = workingCtx.getImageData(0, 0, this.width, this.height);
         
         let totalError = 0;
-        for (var i = 0; i < subsetGoalImageData.data.length; i++) {
-            const error = Math.abs(subsetGoalImageData.data[i] - subsetWorkingImageData.data[i]);
-            totalError += error;
+        for (var i = 0; i < subsetGoalImageData.data.length; i+=4) {
+            const g_offset = i + 1;
+            const b_offset = i + 2;
+            totalError += Math.abs(subsetGoalImageData.data[i] - subsetWorkingImageData.data[i]) + 
+                Math.abs(subsetGoalImageData.data[g_offset] - subsetWorkingImageData.data[g_offset]) + 
+                Math.abs(subsetGoalImageData.data[b_offset] - subsetWorkingImageData.data[b_offset]);
         }
         
         Helpers.Clear(workingCtx, this.width, this.height);
@@ -57,10 +60,20 @@ class Phenotype {
             child2geno[i] = tempC1;
         }
         
-        for(var i = 0; i < child1geno.length; i++) {
+        if (Math.random() > this.mutationChance) {
+            const childToMutate = Helpers.RandomInteger(0, (child1geno.length - 1));
+            child1geno[childToMutate].tryMutate();
+        }
+        
+        if (Math.random() > this.mutationChance) {
+            const childToMutate = Helpers.RandomInteger(0, (child2geno.length - 1));
+            child2geno[childToMutate].tryMutate();
+        }
+        
+        /*for(var i = 0; i < child1geno.length; i++) {
             child1geno[i].tryMutate();
 			child2geno[i].tryMutate();
-        }
+        }*/
 		
         const child1 = new Phenotype({ index: this.index, generation: (this.generation + 1), width: this.width, height: this.height, genotype: child1geno });
         const child2 = new Phenotype({ index: other.index, generation: (other.generation + 1), width: this.width, height: this.height, genotype: child2geno });

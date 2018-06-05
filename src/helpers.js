@@ -7,7 +7,7 @@ class Helpers {
         
         ctx.moveTo(polygon.vertices[0].X, polygon.vertices[0].Y);
         
-        for(var i = 2; i < (polygon.vertices.length); i+=2) {
+        for(var i = 1; i < (polygon.vertices.length); i++) {
             ctx.lineTo(polygon.vertices[i].X, polygon.vertices[i].Y);
         }
         

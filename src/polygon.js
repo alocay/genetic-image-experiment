@@ -1,11 +1,15 @@
 import Point from './point.js'
 import Helpers from './helpers.js'
 
-const MinRadius = 25;
-const MutationChance = 0.05; //0.07
-const VerticesMutationStep = 1; //5
+const MinRadius = 5;
+const VertexMutationChance = 0.8;
+const VerticesMutationStep = 5; //5
+const ColorMutationChance = 0.3;
+const RedMutationChance = 0.33; 
+const GreenMutationChance = 0.66; 
 const ColorMutationStep = 5; //15
-const AlphaMutationStep = 0.1; //0.3
+const AlphaMutationChance = 0.2; 
+const AlphaMutationStep = 0.05; //0.3
 const MaxColor = 255;
 const MaxAlpha = 1;
 
@@ -28,29 +32,51 @@ class Polygon {
 	}
 	
     tryMutate() {
+        const r = Math.random();
 		for(var i = 0; i < this.vertices.length; i++) {
-            if (Math.random() < MutationChance) {
-				if (Math.random() < 0.5) {
-					this.vertices[i].X += Math.random() < 0.5 ? VerticesMutationStep : -VerticesMutationStep;
+            if (r < VertexMutationChance) {
+				if (r < 0.5) {
+					this.vertices[i].X += Math.random() < 0.5  ? VerticesMutationStep : -VerticesMutationStep;
                     this.vertices[i].X = Helpers.Clamp(this.vertices[i].X, MinRadius, this.maxWidth);
 				} else {
-					this.vertices[i].Y += Math.random() < 0.5 ? VerticesMutationStep : -VerticesMutationStep;
+					this.vertices[i].Y += Math.random() < 0.5  ? VerticesMutationStep : -VerticesMutationStep;
                     this.vertices[i].Y = Helpers.Clamp(this.vertices[i].Y, MinRadius, this.maxHeight);
 				}
 			}
         }
 		
-		for (var i = 0; i < this.color.length - 1; i++) {
-			if (Math.random() < MutationChance) {
-				this.color[i] += Math.random() < 0.5 ? ColorMutationStep : -ColorMutationStep;
+        if (r < ColorMutationChance) {
+            const cr = Math.random();
+            if (cr < RedMutationChance) {
+                this.color[0] += Math.random() < 0.5 ? ColorMutationStep : -ColorMutationStep;
+                this.color[0] = Helpers.Clamp(this.color[0], 0, 255);
+            } else if (cr > RedMutationChance && r < GreenMutationChance) {
+                this.color[1] += Math.random() < 0.5 ? ColorMutationStep : -ColorMutationStep;
+                this.color[1] = Helpers.Clamp(this.color[1], 0, 255);
+            } else {
+                this.color[2] += Math.random() < 0.5 ? ColorMutationStep : -ColorMutationStep;
+                this.color[2] = Helpers.Clamp(this.color[2], 0, 255);
+            }
+        }
+        
+		/*for (var i = 0; i < this.color.length - 1; i++) {
+			if (r < ColorMutationChance) {
+				this.color[i] += r < 0.5 ? ColorMutationStep : -ColorMutationStep;
                 this.color[i] = Helpers.Clamp(this.color[i], 0, 255);
 			}
-		}
+		}*/
 		
-		if (Math.random() < MutationChance) {
+		if (Math.random() < AlphaMutationChance) {
 			this.color[3] += Math.random() < 0.5 ? AlphaMutationStep : -AlphaMutationStep;
             this.color[3] = Helpers.Clamp(this.color[3], 0, 1);
 		}
+    }
+    
+    addVertex(point) {
+        this.vertices.push(point);
+        this.vertices.sort(this._compareAngles);
+        
+        
     }
     
     _randomize() {
@@ -60,22 +86,21 @@ class Polygon {
     }
     
     _getRandomCenterPoint(width, height) {
-        const center = new Point(width/2, height/2);
         const minx = 0 + this.radius.X;
         const maxx = width - this.radius.X;
         const miny = 0 + this.radius.Y;
         const maxy = height - this.radius.Y;
-        const x = Helpers.RandomInteger(minx, maxx);
-        const y = Helpers.RandomInteger(miny, maxy);        
+        const x = Helpers.RandomNumber(minx, maxx);
+        const y = Helpers.RandomNumber(miny, maxy);        
         
         return new Point(x, y);
     }
     
     _createRandomColor(co) {
         let c = [];
-        c[0] = co;
-        c[1] = co;
-        c[2] = co;
+        c[0] = 255;
+        c[1] = 0;
+        c[2] = 0;
         c[3] = Helpers.RandomNumber(0.5, 0.5);
         return c;
     }
@@ -104,7 +129,7 @@ class Polygon {
             const x = this.center.X + (this.radius.X * Math.cos(angles[i]));
             const y = this.center.Y + (this.radius.Y * Math.sin(angles[i]));
             
-            verts.push(new Point(x, y));
+            verts.push(new Point(x, y, angles[i]));
         }
         
         return verts;
@@ -129,6 +154,10 @@ class Polygon {
         const height = yMax - yMin;
         
         return [new Point(xMin, yMin), width, height];
+    }
+    
+    _compareAngles(a, b) {
+        return a.angle - b.angle;
     }
 }
 

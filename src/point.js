@@ -1,7 +1,8 @@
 class Point {
-    constructor(x, y) {
+    constructor(x, y, rad) {
         this.X = x;
         this.Y = y;
+        this.angle = rad;
     }
     
     subtract(p) {

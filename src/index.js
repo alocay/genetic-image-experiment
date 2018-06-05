@@ -1,14 +1,28 @@
 import Helpers from './helpers.js';
 import Population from './population.js';
+import Polygon from './polygon.js';
 
 class GenAlgo {
     constructor(size, width, height) {
         this.size = size;
-        this.population = new Population(size, {
-            numOfSides: 6,
-            width: width,
-            height: height
-        });
+        this.options = {
+                numOfSides: 6,
+                width: width,
+                height: height,
+                minRadius : 5,
+                mutationChance: 0.05,
+                verticesMutationStep: 1,
+                colorMutationStep: 1,
+                alphaMutationStep: 0.05
+        };
+        
+        this.population = new Population(size, this.options);
+    }
+    
+    testPoly(ctx) {
+        Helpers.Clear(ctx, 120, 120);
+        const p1 = new Polygon(3, 120, 120);
+        Helpers.Apply(ctx, p1);
     }
     
     getCurrentGeneration() {
