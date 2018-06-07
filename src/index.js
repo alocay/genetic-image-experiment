@@ -16,7 +16,9 @@ class GenAlgo {
                 alphaMutationStep: 0.05
         };
         
+        this.prevFittest = null;
         this.population = new Population(size, this.options);
+        this.log = false;
     }
     
     testPoly(ctx) {
@@ -32,8 +34,15 @@ class GenAlgo {
     runOnce(goalCtx, workingCtx, fittestCtx) {
         this.population.scoreAll(goalCtx, workingCtx);
         
+        
         const fittest = this.population.getFittest();
         Helpers.ApplyPhenotype(fittestCtx, fittest);
+        
+        if (this.prevFittest && this.log) {
+            console.log('Fittest delta: ' + (this.prevFittest - fittest.score));
+        }
+        
+        this.prevFittest = fittest.score;
         
         let newGen = [];
         for(var i = 0; i < this.size; i+=2) {

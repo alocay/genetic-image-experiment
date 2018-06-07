@@ -2,11 +2,11 @@ import Point from './point.js'
 import Helpers from './helpers.js'
 
 const MinRadius = 5;
-const ColorMutationChance = 0.3;
-const AlphaMutationChance = 0.45; 
-const VertexMutationChance = 0.7;
-const AddVertexChance = 0.8;
-const RemoveVertexChance = 0.9;
+const ColorMutationChance = 0.15;
+const AlphaMutationChance = 0.2; 
+const VertexMutationChance = 0.8;
+const AddVertexChance = 1;
+const RemoveVertexChance = 1;
 //const PolyMoveChance = 0.7;
 
 const RedMutationChance = 0.33; 
@@ -18,17 +18,25 @@ const MaxColor = 255;
 const MaxAlpha = 1;
 
 class Polygon {
-    constructor(numOfSides, maxWidth, maxHeight) {
-        this.vertices = [];
-		this.color = [];
-        this.boundingBox = [];
-        this.numOfSides = numOfSides;
-        this.radius = new Point(Helpers.RandomNumber(MinRadius, (maxWidth / 2)), Helpers.RandomNumber(MinRadius, (maxHeight / 2)));
-        this.center = this._getRandomCenterPoint(maxWidth, maxHeight);
-        this.maxWidth = maxWidth;
-        this.maxHeight = maxHeight;
+    constructor(options) {
+        this.maxWidth = options.maxWidth;
+        this.maxHeight = options.maxHeight;
         
-        this._randomize();
+        if (options.vertices) {
+            this.vertices = options.vertices;
+            this.color = options.color;
+            this.center = options.center;
+            this.radius = options.radius;
+        } else {
+            this.vertices = [];
+            this.color = [];
+            this.boundingBox = [];
+            this.numOfSides = options.numOfSides;
+            this.radius = new Point(Helpers.RandomNumber(MinRadius, (this.maxWidth / 2)), Helpers.RandomNumber(MinRadius, (this.maxHeight / 2)));
+            this.center = this._getRandomCenterPoint(this.maxWidth, this.maxHeight);
+        
+            this._randomize();
+        }
     }
     
 	getFillStyle() {
@@ -51,11 +59,13 @@ class Polygon {
             this.changeAlpha();
         } else if (chance < VertexMutationChance) {
             this.moveRandomVertex(Math.random() < 0.5);
-        } else if (chance < AddVertexChance) {
+        } 
+        
+        /*else if (chance < AddVertexChance) {
             this.addRandomVertex();
         } else if (chance < RemoveVertexChance) {
             this.removeRandomVertex();
-        }
+        }*/
     }
     
     changeColor(index) {
@@ -109,9 +119,27 @@ class Polygon {
         }
     }
     
+    clone() {
+        let options = {
+            maxWidth: this.maxWidth,
+            maxHeight: this.maxHeight,
+            color: this.color.slice(0),
+            center: new Point(this.center.X, this.center.Y),
+            radius: new Point(this.radius.X, this.radius.Y),
+            vertices: []
+        };
+            
+        for (var i = 0; i < this.vertices.length; i++) {
+            const v = this.vertices[i]
+            options.vertices.push(new Point(v.X, v.Y, v.angle))
+        }
+        
+        return new Polygon(options);
+    }
+    
     _randomize() {
         this.vertices = this._createRandomVertices();
-		this.color = this._createRandomColor(100);
+		this.color = this._createStartingColor(100);
         this.boundingBox = this._getBoundingBox();
     }
     
@@ -126,7 +154,7 @@ class Polygon {
         return new Point(x, y);
     }
     
-    _createRandomColor(co) {
+    _createStartingColor(co) {
         let c = [];
         c[0] = 255;
         c[1] = 0;
@@ -135,7 +163,7 @@ class Polygon {
         return c;
     }
     
-	_createRandomColor2() {
+	_createRandomColor() {
         let c = [];
 		c[0] = Helpers.RandomInteger(0, 255);
         c[1] = Helpers.RandomInteger(0, 255);

@@ -1,4 +1,5 @@
 import Phenotype from './phenotype.js';
+import Helpers from './helpers.js';
 
 class Population {
     constructor(size, phenotypeOptions) {
@@ -56,7 +57,6 @@ class Population {
     
     getFittest() {
 		this.population.sort(this._compareForFittest);
-        console.log(this.population);
 		return this.population[0];
     }
     
@@ -96,7 +96,7 @@ class Population {
 	}
 	
 	_compareForFittest(a, b) {
-        return b.score - a.score;
+        return a.score - b.score;
 	}
 	
     _generate(options) {

@@ -12,7 +12,7 @@ class Phenotype {
 		this.id = Helpers.RandomInteger(1, 10000) + "_" + this.generation + "_" + this.index;
         this.width = options.width;
         this.height = options.height;
-        this.mutationChance = 0.001;
+        this.mutationChance = 0.05;
         
         if (options.genotype) {
             this.genotype = options.genotype;
@@ -48,14 +48,14 @@ class Phenotype {
     }
     
     breed(other) {
-        let child1geno = this.genotype;
-        let child2geno = other.genotype;
+        let child1geno = this.cloneGenotype();
+        let child2geno = other.cloneGenotype();
         const crossoverIndex = Helpers.RandomInteger(0, child1geno.length);
 		
         // Swap the polygons
         for(var i = 0; i < crossoverIndex; i++) {
-            const tempC1 = child1geno[i];
-            child1geno[i] = child2geno[i];
+            const tempC1 = child1geno[i].clone();
+            child1geno[i] = child2geno[i].clone();
             child2geno[i] = tempC1;
         }
         
@@ -84,16 +84,16 @@ class Phenotype {
         let clonedGeno = [];
         
         for(var i = 0; i < this.genotype.length; i++) {
-            const g = this.genotype[i];
-            clonedGeno.push(new Point(g.X, g.Y));
+            clonedGeno[i] = this.genotype[i].clone();
         }
         
         return clonedGeno;
     }
     
     _generate(numOfPolygons) {
-        for (var i = 0; i < numOfPolygons; i++) {        
-            this.genotype.push(new Polygon(this.numOfSides, this.width, this.height));
+        for (var i = 0; i < numOfPolygons; i++) {
+            const options = { numOfSides: this.numOfSides, maxWidth: this.width, maxHeight: this.height };
+            this.genotype.push(new Polygon(options));
         }
     }
 }

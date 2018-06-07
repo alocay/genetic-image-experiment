@@ -4,10 +4,11 @@
   "description": "Genetic algorithm experiment with images",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --mode development",
-    "dev": "webpack --mode development",
-    "prod": "webpack --mode production"
-  },
+    "cp_index": "ncp ./src/index.html ./dist/index.html",
+    "start": "npm run cp_index && webpack-dev-server --mode development",
+    "dev": "npm run cp_index && webpack --mode development",
+    "prod": "npm run cp_index && webpack --mode production"
+  }, 
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alocay/genetic-image-experiment.git"
@@ -26,6 +27,7 @@
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.2.0",
+    "ncp": "^2.0.0",
     "style-loader": "^0.21.0",
     "webpack": "^4.10.1",
     "webpack-cli": "^2.1.4",

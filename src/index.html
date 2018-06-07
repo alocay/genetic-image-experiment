@@ -6,43 +6,60 @@
             $(document).ready(function() {
                 const genDiv = $("#gen");
                 const polyDiv = $("#poly");
+                const runButton = $("#genp");
                 const goalCtx = $("#goal")[0].getContext("2d");
                 const workingCtx = $("#working")[0].getContext("2d");
                 const fittestCtx = $("#fittest")[0].getContext("2d");
                 let count = 1;
+                let running = false;
                 
-                goalCtx.fillStyle = '#ff0000';
-                goalCtx.beginPath();
+                runButton.click(function() {
+                    running = !running;
+                    
+                    if (running) {
+                        runButton.text("Stop");
+                    } else {
+                        runButton.text("Run");
+                    }
+                });
                 
-                goalCtx.moveTo(5, 15);
-                goalCtx.lineTo(60, 30);
-                goalCtx.lineTo(60, 90);
-                goalCtx.lineTo(10, 90);
-                
-                goalCtx.closePath();
-                goalCtx.fill();
-                
-                const genalgo = GenAlgo.NewGenAlgo(100, 120, 120);
-                genDiv.text("Gen: " + genalgo.getCurrentGeneration());
+                function createGoalPoly() {
+                    goalCtx.fillStyle = '#ff0000';
+                    goalCtx.beginPath();
+                    
+                    goalCtx.moveTo(5, 15);
+                    goalCtx.lineTo(60, 30);
+                    goalCtx.lineTo(60, 90);
+                    goalCtx.lineTo(10, 90);
+                    
+                    goalCtx.closePath();
+                    goalCtx.fill();
+                }
                 
                 function runAlgoStep() {
-                    if (genalgo.getCurrentGeneration() < 1000) {
+                    if (running) {
                         let polys = genalgo.runOnce(goalCtx, workingCtx, fittestCtx);
                         genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                         polyDiv.text("Polys: " + polys);
-                        window.requestAnimationFrame(runAlgoStep);
                     }
+                    
+                    window.requestAnimationFrame(runAlgoStep);
                 }
                 
+                const genalgo = GenAlgo.NewGenAlgo(50, 120, 120);
+                genDiv.text("Gen: " + genalgo.getCurrentGeneration());
+                
+                createGoalPoly();
                 window.requestAnimationFrame(runAlgoStep);
             });
         </script>
-	</head>
-
+    </head>
 	<body>
 		<canvas id="goal" width="120" height="120" style="border:1px solid #000000;"></canvas>
         <canvas id="fittest" width="120" height="120" style="border:1px solid #000000;"></canvas>
-		<canvas id="working" width="120" height="120" style="border:1px solid #000000;"></canvas>
-		<div id="gen"></div>
+		<canvas id="working" width="120" height="120" style="border:1px solid #000000;display: none;"></canvas>
+		<div id="gen">Gen: </div>
+        <div id="poly">Polys: </div>
+        <button id="genp" style="cursor: pointer">Run</button>
 	</body>
 </html>
