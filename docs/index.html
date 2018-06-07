@@ -49,10 +49,7 @@
                 const genalgo = GenAlgo.NewGenAlgo(50, 120, 120);
                 genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                 
-                createGoalPoly();
-                
-                console.log('data', goalCtx.getImageData(0, 0, 120, 120));
-                
+                createGoalPoly();                
                 window.requestAnimationFrame(runAlgoStep);
             });
         </script>
