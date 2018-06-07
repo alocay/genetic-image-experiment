@@ -24,7 +24,7 @@
                 goalCtx.closePath();
                 goalCtx.fill();
                 
-                const genalgo = GenAlgo.NewGenAlgo(100, 120, 120);
+                const genalgo = GenAlgo.NewGenAlgo(50, 120, 120);
                 genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                 
                 genpDiv.click(function() {
@@ -32,7 +32,7 @@
                 });
                 
                 function runAlgoStep() {
-                    if (genalgo.getCurrentGeneration() < 3000) {
+                    if (genalgo.getCurrentGeneration() < 4) {
                         let polys = genalgo.runOnce(goalCtx, workingCtx, fittestCtx);
                         genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                         polyDiv.text("Polys: " + polys);

@@ -2,14 +2,18 @@ import Point from './point.js'
 import Helpers from './helpers.js'
 
 const MinRadius = 5;
-const VertexMutationChance = 0.8;
-const VerticesMutationStep = 5; //5
 const ColorMutationChance = 0.3;
+const AlphaMutationChance = 0.45; 
+const VertexMutationChance = 0.7;
+const AddVertexChance = 0.8;
+const RemoveVertexChance = 0.9;
+//const PolyMoveChance = 0.7;
+
 const RedMutationChance = 0.33; 
-const GreenMutationChance = 0.66; 
-const ColorMutationStep = 5; //15
-const AlphaMutationChance = 0.2; 
-const AlphaMutationStep = 0.05; //0.3
+const GreenMutationChance = 0.66;
+const VerticesMutationStep = 5;
+const ColorMutationStep = 5;
+const AlphaMutationStep = 0.1;
 const MaxColor = 255;
 const MaxAlpha = 1;
 
@@ -32,51 +36,77 @@ class Polygon {
 	}
 	
     tryMutate() {
-        const r = Math.random();
-		for(var i = 0; i < this.vertices.length; i++) {
-            if (r < VertexMutationChance) {
-				if (r < 0.5) {
-					this.vertices[i].X += Math.random() < 0.5  ? VerticesMutationStep : -VerticesMutationStep;
-                    this.vertices[i].X = Helpers.Clamp(this.vertices[i].X, MinRadius, this.maxWidth);
-				} else {
-					this.vertices[i].Y += Math.random() < 0.5  ? VerticesMutationStep : -VerticesMutationStep;
-                    this.vertices[i].Y = Helpers.Clamp(this.vertices[i].Y, MinRadius, this.maxHeight);
-				}
-			}
-        }
-		
-        if (r < ColorMutationChance) {
+        const chance = Math.random();
+        
+        if (chance < ColorMutationChance) {
             const cr = Math.random();
             if (cr < RedMutationChance) {
-                this.color[0] += Math.random() < 0.5 ? ColorMutationStep : -ColorMutationStep;
-                this.color[0] = Helpers.Clamp(this.color[0], 0, 255);
-            } else if (cr > RedMutationChance && r < GreenMutationChance) {
-                this.color[1] += Math.random() < 0.5 ? ColorMutationStep : -ColorMutationStep;
-                this.color[1] = Helpers.Clamp(this.color[1], 0, 255);
+                this.changeColor(0);
+            } else if (cr < GreenMutationChance) {
+                this.changeColor(1);
             } else {
-                this.color[2] += Math.random() < 0.5 ? ColorMutationStep : -ColorMutationStep;
-                this.color[2] = Helpers.Clamp(this.color[2], 0, 255);
+                this.changeColor(2);
             }
+        } else if (chance < AlphaMutationChance) {
+            this.changeAlpha();
+        } else if (chance < VertexMutationChance) {
+            this.moveRandomVertex(Math.random() < 0.5);
+        } else if (chance < AddVertexChance) {
+            this.addRandomVertex();
+        } else if (chance < RemoveVertexChance) {
+            this.removeRandomVertex();
         }
-        
-		/*for (var i = 0; i < this.color.length - 1; i++) {
-			if (r < ColorMutationChance) {
-				this.color[i] += r < 0.5 ? ColorMutationStep : -ColorMutationStep;
-                this.color[i] = Helpers.Clamp(this.color[i], 0, 255);
-			}
-		}*/
-		
-		if (Math.random() < AlphaMutationChance) {
-			this.color[3] += Math.random() < 0.5 ? AlphaMutationStep : -AlphaMutationStep;
-            this.color[3] = Helpers.Clamp(this.color[3], 0, 1);
-		}
+    }
+    
+    changeColor(index) {
+        this.color[index] += Math.random() < 0.5 ? ColorMutationStep : -ColorMutationStep;
+        this.color[index] = Helpers.Clamp(this.color[index], 0, 255);
+    }
+    
+    changeAlpha() {
+        this.color[3] += Math.random() < 0.5 ? AlphaMutationStep : -AlphaMutationStep;
+        this.color[3] = Helpers.Clamp(this.color[3], 0, 1);
+    }
+    
+    moveRandomVertex(moveX) {
+        const index = Helpers.RandomInteger(0, this.vertices.length - 1);
+        this.moveVertex(index, moveX);
+    }
+    
+    moveVertex(index, moveX) {
+        if (moveX) {
+            this.vertices[index].X += Math.random() < 0.5  ? VerticesMutationStep : -VerticesMutationStep;
+            this.vertices[index].X = Helpers.Clamp(this.vertices[index].X, 0, this.maxWidth);
+        } else {
+            this.vertices[index].Y += Math.random() < 0.5  ? VerticesMutationStep : -VerticesMutationStep;
+            this.vertices[index].Y = Helpers.Clamp(this.vertices[index].Y, 0, this.maxHeight);
+        }
+    }
+    
+    addRandomVertex() {
+        const angle = Helpers.RandomNumber(0, (2 * Math.PI));
+        const x = this.center.X + (this.radius.X * Math.cos(angle));
+        const y = this.center.Y + (this.radius.Y * Math.sin(angle));
+        this.addVertex(new Point(x, y, angle));
     }
     
     addVertex(point) {
+        if (point.angle === null || point.angle === undefined) {
+            point.angle = Math.acos((point.X - this.center.X) / this.radius.X);
+        }
+        
         this.vertices.push(point);
         this.vertices.sort(this._compareAngles);
-        
-        
+    }
+    
+    removeRandomVertex() {
+        this.removeVertex(Helpers.RandomInteger(0, this.vertices.length - 1));
+    }
+    
+    removeVertex(index) {
+        if (this.vertices.length > 3) {
+            this.vertices = this.vertices.splice(index, 1);
+        }
     }
     
     _randomize() {

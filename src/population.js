@@ -56,7 +56,7 @@ class Population {
     
     getFittest() {
 		this.population.sort(this._compareForFittest);
-        
+        console.log(this.population);
 		return this.population[0];
     }
     
@@ -96,9 +96,7 @@ class Population {
 	}
 	
 	_compareForFittest(a, b) {
-		if (a.score > b.score) return 1;
-		if (a.score < b.score) return -1;
-		return 0;
+        return b.score - a.score;
 	}
 	
     _generate(options) {

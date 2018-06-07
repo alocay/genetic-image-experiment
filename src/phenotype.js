@@ -44,8 +44,7 @@ class Phenotype {
         }
         
         Helpers.Clear(workingCtx, this.width, this.height);
-        
-        this.score = totalError > 0 ? (1 / totalError) : Number.MAX_VALUE;
+        this.score = totalError;
     }
     
     breed(other) {
