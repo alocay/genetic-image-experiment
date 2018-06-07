@@ -4,10 +4,10 @@
   "description": "Genetic algorithm experiment with images",
   "main": "index.js",
   "scripts": {
-    "cp_index": "ncp ./src/index.html ./dist/index.html",
-    "start": "npm run cp_index && webpack-dev-server --mode development",
-    "dev": "npm run cp_index && webpack --mode development",
-    "prod": "npm run cp_index && webpack --mode production"
+    "cp_files": "ncp ./src/index.html ./docs/index.html && ncp ./external/jquery-3.3.1.min.js ./docs/jquery-3.3.1.min.js",
+    "start": "npm run cp_files && webpack-dev-server --mode development",
+    "dev": "npm run cp_files && webpack --mode development",
+    "prod": "npm run cp_files && webpack --mode production"
   }, 
   "repository": {
     "type": "git",
