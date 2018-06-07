@@ -50,6 +50,9 @@
                 genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                 
                 createGoalPoly();
+                
+                console.log('data', goalCtx.getImageData(0, 0, 120, 120));
+                
                 window.requestAnimationFrame(runAlgoStep);
             });
         </script>

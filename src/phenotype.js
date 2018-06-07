@@ -38,9 +38,11 @@ class Phenotype {
         for (var i = 0; i < subsetGoalImageData.data.length; i+=4) {
             const g_offset = i + 1;
             const b_offset = i + 2;
+            const a_offset = i + 3;
             totalError += Math.abs(subsetGoalImageData.data[i] - subsetWorkingImageData.data[i]) + 
                 Math.abs(subsetGoalImageData.data[g_offset] - subsetWorkingImageData.data[g_offset]) + 
-                Math.abs(subsetGoalImageData.data[b_offset] - subsetWorkingImageData.data[b_offset]);
+                Math.abs(subsetGoalImageData.data[b_offset] - subsetWorkingImageData.data[b_offset]) + 
+                Math.abs(subsetGoalImageData.data[a_offset] - subsetWorkingImageData.data[a_offset]);
         }
         
         Helpers.Clear(workingCtx, this.width, this.height);

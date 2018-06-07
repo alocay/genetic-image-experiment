@@ -8,7 +8,7 @@
     "start": "npm run cp_files && webpack-dev-server --mode development",
     "dev": "npm run cp_files && webpack --mode development",
     "prod": "npm run cp_files && webpack --mode production"
-  }, 
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alocay/genetic-image-experiment.git"
