@@ -4,7 +4,7 @@
   "description": "Genetic algorithm experiment with images",
   "main": "index.js",
   "scripts": {
-    "cp_files": "ncp ./src/index.html ./docs/index.html && ncp ./external/jquery-3.3.1.min.js ./docs/jquery-3.3.1.min.js && ncp ./css/styles.css ./docs/styles.css",
+    "cp_files": "ncp ./src/index.html ./docs/index.html && ncp ./external/ ./docs/ && ncp ./css/styles.css ./docs/",
     "start": "npm run cp_files && webpack-dev-server --mode development",
     "dev": "npm run cp_files && webpack --mode development",
     "prod": "npm run cp_files && webpack --mode production"

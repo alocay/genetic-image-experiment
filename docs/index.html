@@ -12,6 +12,8 @@
                 const goalCtx = $("#goal")[0].getContext("2d");
                 const workingCtx = $("#working")[0].getContext("2d");
                 const fittestCtx = $("#fittest")[0].getContext("2d");
+                const imggoal = document.getElementById("bear");
+                
                 let count = 1;
                 let running = false;
                 
@@ -38,6 +40,10 @@
                     goalCtx.fill();
                 }
                 
+                function createGoalImage() {
+                    goalCtx.drawImage(imggoal, 0, 0);
+                }
+                
                 const genalgo = GenAlgo.NewGenAlgo(120, 120, workingCtx, fittestCtx);
                 
                 function runAlgoStep() {
@@ -51,10 +57,9 @@
                     window.requestAnimationFrame(runAlgoStep);
                 }
                 
-                genDiv.text("Gen: " + genalgo.getCurrentGeneration());
-                
-                createGoalPoly();                
+                createGoalImage();                
                 window.requestAnimationFrame(runAlgoStep);
+                genDiv.text("Gen: " + genalgo.getCurrentGeneration());
             });
         </script>
     </head>
@@ -66,6 +71,7 @@
 		<canvas id="goal" width="120" height="120" style="border:1px solid #000000;"></canvas>
         <canvas id="fittest" width="120" height="120" style="border:1px solid #000000;"></canvas>
 		<canvas id="working" width="120" height="120" style="border:1px solid #000000;display: none;"></canvas>
+        <img id="bear" src="fuzzy_sm.jpg" />
 		<div id="gen">Gen: </div>
         <div id="poly">Polys: </div>
         <div id="score">Delta: </div>

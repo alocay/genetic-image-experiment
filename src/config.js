@@ -40,7 +40,7 @@ class Config {
         this._size = 100;
         this._randomColors = false;
         this._startingColor = [ 255, 0, 0, 1 ];
-        this._numOfPolygons = 50;
+        this._numOfPolygons = 75;
         this._numOfSides = 6;
         this._mutationChance = 0.05;
         this._colorMutationChance = 0.45;
