@@ -1,5 +1,7 @@
 'use strict' 
 
+import Config from './config.js';
+
 class Helpers {
 	static Apply(ctx, polygon) {
         ctx.fillStyle = polygon.getFillStyle();
@@ -20,7 +22,7 @@ class Helpers {
     }
     
     static ApplyPhenotype(ctx, phenotype) {
-        this.Clear(ctx, phenotype.width, phenotype.height);
+        this.Clear(ctx, Config.Width, Config.Height);
         
         for(var i = 0; i < phenotype.genotype.length; i++) {
 			const p = phenotype.genotype[i];
@@ -30,25 +32,6 @@ class Helpers {
     
     static Clear(ctx, width, height) {
         ctx.clearRect(0, 0, width, height);
-    }
-    
-    static ApplyAndCompare(goalCtx, workingCtx, phenotype) {
-        const previousWorkingImageData = workingCtx.getImageData(0, 0, phenotype.width, phenotype.height);
-        
-        this.ApplyPhenotype(workingCtx, phenotype);
-        
-        const subsetGoalImageData = goalCtx.getImageData(0, 0, phenotype.width, phenotype.height);
-        const subsetWorkingImageData = workingCtx.getImageData(0, 0, phenotype.width, phenotype.height);
-        
-        let totalError = 0;
-        for (var i = 0; i < subsetGoalImageData.data.length; i++) {
-            const error = Math.abs(subsetGoalImageData.data[i] - subsetWorkingImageData.data[i]);
-            totalError += error;
-        }
-        
-        this.Revert(workingCtx, previousWorkingImageData);
-        
-        return totalError;
     }
     
     static Clamp(value, min, max) {

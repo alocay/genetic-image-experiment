@@ -1,22 +1,22 @@
 import Phenotype from './phenotype.js';
 import Helpers from './helpers.js';
+import Config from './config.js';
 
 class Population {
-    constructor(size, phenotypeOptions) {
-        this.size = size;
+    constructor(options) {
         this.population = [];
 		this.generation = 1;
 		this.probabilitiesCalced = false;
-        this._generate(phenotypeOptions || {});
+        this._generate(options);
     }
     
     scoreAll(goalCtx, workingCtx) {
-        for(var i = 0; i < this.size; i++) {
+        for(var i = 0; i < this.population.length; i++) {
             this.population[i].computeFitness(goalCtx, workingCtx);
         }
     }
     
-	selectRoulette(excludedId) {
+	selectRoulette(excludedId) {        
 		this._calculateRouletteProbabilities();
 		
 		const prob = Math.random();
@@ -100,10 +100,9 @@ class Population {
 	}
 	
     _generate(options) {
-        for(var i = 0; i < this.size; i++) {
+        for(var i = 0; i < Config.PopSize; i++) {
 			options.index = i;
 			options.generation = this.generation;
-            options.numOfPolygons = 50;
             this.population.push(new Phenotype(options));
         }
     }    

@@ -1,51 +1,51 @@
 import Helpers from './helpers.js';
 import Population from './population.js';
 import Polygon from './polygon.js';
+import Config from './config.js';
 
 class GenAlgo {
-    constructor(size, width, height) {
-        this.size = size;
+    constructor(width, height, workingCtx, fittestCtx) {
         this.options = {
-                numOfSides: 6,
-                width: width,
-                height: height,
-                minRadius : 5,
-                mutationChance: 0.05,
-                verticesMutationStep: 1,
-                colorMutationStep: 1,
-                alphaMutationStep: 0.05
+            width: width,
+            height: height,
+            reset: this.reset.bind(this)
         };
         
-        this.prevFittest = null;
-        this.population = new Population(size, this.options);
-        this.log = false;
+        this.workingCtx = workingCtx;
+        this.fittestCtx = fittestCtx;
+        this.initialized = false;
+       
+        Config.Init(this.options);
+        Config.CreateDatGui();
+        
+        this.population = new Population(this.options);
     }
     
-    testPoly(ctx) {
-        Helpers.Clear(ctx, 120, 120);
-        const p1 = new Polygon(3, 120, 120);
-        Helpers.Apply(ctx, p1);
+    isRunning() {
+        return Config.IsRunning;
     }
     
     getCurrentGeneration() {
-        return this.population.generation;
+        return this.population ? this.population.generation : "";
     }
     
-    runOnce(goalCtx, workingCtx, fittestCtx) {
-        this.population.scoreAll(goalCtx, workingCtx);
+    reset() {       
+        Config.Stop();
         
+        Helpers.Clear(this.workingCtx, Config.Width, Config.Height);
+        Helpers.Clear(this.fittestCtx, Config.Width, Config.Height);
+        
+        this.population = new Population(this.options);
+    }
+    
+    runOnce(goalCtx) {
+        this.population.scoreAll(goalCtx, this.workingCtx);
         
         const fittest = this.population.getFittest();
-        Helpers.ApplyPhenotype(fittestCtx, fittest);
-        
-        if (this.prevFittest && this.log) {
-            console.log('Fittest delta: ' + (this.prevFittest - fittest.score));
-        }
-        
-        this.prevFittest = fittest.score;
+        Helpers.ApplyPhenotype(this.fittestCtx, fittest);
         
         let newGen = [];
-        for(var i = 0; i < this.size; i+=2) {
+        for(var i = 0; i < Config.PopSize; i+=2) {
             const p1 = this.population.selectRoulette();
             const p2 = this.population.selectRoulette(p1.id);
             
@@ -56,10 +56,10 @@ class GenAlgo {
         }
         
         this.population.nextGeneration(newGen);
-        return this.population.getNumOfPolygons();
+        return [this.population.getNumOfPolygons(), fittest.score];
     }
 }
 
-export function NewGenAlgo(s, w, h) {
-    return new GenAlgo(s, w, h);
+export function NewGenAlgo(w, h, wctx, fctx) {
+    return new GenAlgo(w, h, wctx, fctx);
 };

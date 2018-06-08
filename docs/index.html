@@ -1,27 +1,19 @@
 <html>
     <head>
         <script src="jquery-3.3.1.min.js"></script>
+        <link rel="stylesheet" href="styles.css">
         <script type="text/javascript" src="bundle.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
                 const genDiv = $("#gen");
                 const polyDiv = $("#poly");
+                const scoreDiv = $("#score");
                 const runButton = $("#genp");
                 const goalCtx = $("#goal")[0].getContext("2d");
                 const workingCtx = $("#working")[0].getContext("2d");
                 const fittestCtx = $("#fittest")[0].getContext("2d");
                 let count = 1;
                 let running = false;
-                
-                runButton.click(function() {
-                    running = !running;
-                    
-                    if (running) {
-                        runButton.text("Stop");
-                    } else {
-                        runButton.text("Run");
-                    }
-                });
                 
                 function createGoalPoly() {
                     goalCtx.fillStyle = '#ff0000';
@@ -36,17 +28,19 @@
                     goalCtx.fill();
                 }
                 
+                const genalgo = GenAlgo.NewGenAlgo(120, 120, workingCtx, fittestCtx);
+                
                 function runAlgoStep() {
-                    if (running) {
-                        let polys = genalgo.runOnce(goalCtx, workingCtx, fittestCtx);
+                    if (genalgo.isRunning()) {
+                        const stats = genalgo.runOnce(goalCtx);
                         genDiv.text("Gen: " + genalgo.getCurrentGeneration());
-                        polyDiv.text("Polys: " + polys);
+                        polyDiv.text("Polys: " + stats[0]);
+                        scoreDiv.text("Delta: " + stats[1]);
                     }
                     
                     window.requestAnimationFrame(runAlgoStep);
                 }
                 
-                const genalgo = GenAlgo.NewGenAlgo(50, 120, 120);
                 genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                 
                 createGoalPoly();                
@@ -55,11 +49,15 @@
         </script>
     </head>
 	<body>
+        <div>
+            <div style="display:inline-block; width:120px;">Goal</div>
+            <div style="display:inline-block; width:120px;">Best (so far)</div>
+        </div>
 		<canvas id="goal" width="120" height="120" style="border:1px solid #000000;"></canvas>
         <canvas id="fittest" width="120" height="120" style="border:1px solid #000000;"></canvas>
 		<canvas id="working" width="120" height="120" style="border:1px solid #000000;display: none;"></canvas>
 		<div id="gen">Gen: </div>
         <div id="poly">Polys: </div>
-        <button id="genp" style="cursor: pointer">Run</button>
+        <div id="score">Delta: </div>
 	</body>
 </html>
