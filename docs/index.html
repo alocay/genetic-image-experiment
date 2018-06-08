@@ -12,7 +12,7 @@
                 const goalCtx = $("#goal")[0].getContext("2d");
                 const workingCtx = $("#working")[0].getContext("2d");
                 const fittestCtx = $("#fittest")[0].getContext("2d");
-                const imggoal = document.getElementById("bear");
+                const imggoal = document.getElementById("goalimg");
                 
                 let count = 1;
                 let running = false;
@@ -44,7 +44,7 @@
                     goalCtx.drawImage(imggoal, 0, 0);
                 }
                 
-                const genalgo = GenAlgo.NewGenAlgo(120, 120, workingCtx, fittestCtx);
+                const genalgo = GenAlgo.NewGenAlgo(imggoal.width, imggoal.height, workingCtx, fittestCtx);
                 
                 function runAlgoStep() {
                     if (genalgo.isRunning()) {
@@ -65,13 +65,13 @@
     </head>
 	<body>
         <div>
-            <div style="display:inline-block; width:120px;">Goal</div>
+            <div style="display:inline-block; width:631px;">Goal</div>
             <div style="display:inline-block; width:120px;">Best (so far)</div>
         </div>
-		<canvas id="goal" width="120" height="120" style="border:1px solid #000000;"></canvas>
-        <canvas id="fittest" width="120" height="120" style="border:1px solid #000000;"></canvas>
-		<canvas id="working" width="120" height="120" style="border:1px solid #000000;display: none;"></canvas>
-        <img id="bear" src="fuzzy_sm.jpg" />
+		<canvas id="goal" width="150" height="144" style="border:1px solid #000000;"></canvas>
+        <canvas id="fittest" width="150" height="144" style="border:1px solid #000000;"></canvas>
+		<canvas id="working" width="150" height="144" style="border:1px solid #000000;display: none;"></canvas>
+        <img id="goalimg" src="britto_apple_small.jpg" style="display: none;"/>
 		<div id="gen">Gen: </div>
         <div id="poly">Polys: </div>
         <div id="score">Delta: </div>

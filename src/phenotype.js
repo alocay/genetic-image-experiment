@@ -24,13 +24,14 @@ class Phenotype {
         Helpers.ApplyPhenotype(workingCtx, this);
         
         const subsetGoalImageData = goalCtx.getImageData(0, 0, Config.Width, Config.Height);
-        const subsetWorkingImageData = workingCtx.getImageData(0, 0, Config.Height, Config.Height);
+        const subsetWorkingImageData = workingCtx.getImageData(0, 0, Config.Width, Config.Height);
         
         let totalError = 0;
         for (var i = 0; i < subsetGoalImageData.data.length; i+=4) {
             const g_offset = i + 1;
             const b_offset = i + 2;
             const a_offset = i + 3;
+            
             totalError += Math.abs(subsetGoalImageData.data[i] - subsetWorkingImageData.data[i]) + 
                 Math.abs(subsetGoalImageData.data[g_offset] - subsetWorkingImageData.data[g_offset]) + 
                 Math.abs(subsetGoalImageData.data[b_offset] - subsetWorkingImageData.data[b_offset]) + 

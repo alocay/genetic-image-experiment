@@ -171,8 +171,6 @@ class Polygon {
     _randomize() {
         this.vertices = this._createRandomVertices();
         
-        console.log('colors', Config.UseRandomColors);
-        
         if (Config.UseRandomColors) {
             this.color = this._createRandomColor();
         } else {
