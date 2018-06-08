@@ -170,7 +170,15 @@ class Polygon {
     
     _randomize() {
         this.vertices = this._createRandomVertices();
-		this.color = this._createStartingColor(100);
+        
+        console.log('colors', Config.UseRandomColors);
+        
+        if (Config.UseRandomColors) {
+            this.color = this._createRandomColor();
+        } else {
+            this.color = Config.StartingColor;
+        }
+        
         this.boundingBox = this._getBoundingBox();
     }
     
@@ -183,15 +191,6 @@ class Polygon {
         const y = Helpers.RandomNumber(miny, maxy);        
         
         return new Point(x, y);
-    }
-    
-    _createStartingColor(co) {
-        let c = [];
-        c[0] = 255;
-        c[1] = 0;
-        c[2] = 0;
-        c[3] = Helpers.RandomNumber(0.5, 0.5);
-        return c;
     }
     
 	_createRandomColor() {

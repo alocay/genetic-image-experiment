@@ -37,11 +37,13 @@ class Config {
         this._height = options.height;
         this._toggleRun = options.toggleRun;
         this._reset = options.reset;
-        this._size = 76;
+        this._size = 100;
+        this._randomColors = false;
+        this._startingColor = [ 255, 0, 0, 1 ];
         this._numOfPolygons = 50;
         this._numOfSides = 6;
         this._mutationChance = 0.05;
-        this._colorMutationChance = 0.15;
+        this._colorMutationChance = 0.45;
         this._redMutationChance = 0.33;
         this._greenMutationChance = 0.66;
         this._blueMutationChance = 0.9;
@@ -99,6 +101,22 @@ class Config {
         } else {
             this._numOfSides = sides;
         }
+    }
+    
+    static get UseRandomColors() {
+        return this._randomColors;
+    }
+    
+    static set UseRandomColors(randomColors) {
+        this._randomColors = randomColors;
+    }
+    
+    static get StartingColor() {
+        return this._startingColor;
+    }
+    
+    static set StartingColor(color) {
+        this._startingColor = color;
     }
     
     static get MutationChance() {
@@ -239,6 +257,8 @@ class Config {
         initGui.add(this, 'PopSize').step(2).onChange(this._stopRunning.bind(this));
         initGui.add(this, 'NumOfPolygons').onChange(this._stopRunning.bind(this));
         initGui.add(this, 'InitialNumOfSides', [0,3,4,5,6,7,8,9,10]).onChange(this._stopRunning.bind(this));
+        initGui.add(this, 'UseRandomColors').onChange(this._stopRunning.bind(this));
+        initGui.addColor(this, 'StartingColor').onChange(this._stopRunning.bind(this));
         initGui.open();
         
         const mutations = this._gui.addFolder('Mutation Chances (Cumalative max <= 1)');

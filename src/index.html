@@ -26,6 +26,16 @@
                     
                     goalCtx.closePath();
                     goalCtx.fill();
+                    
+                    goalCtx.fillStyle = '#00ff00bb';
+                    goalCtx.beginPath();
+                    
+                    goalCtx.moveTo(15, 15);
+                    goalCtx.lineTo(90, 50);
+                    goalCtx.lineTo(30, 75);
+                    
+                    goalCtx.closePath();
+                    goalCtx.fill();
                 }
                 
                 const genalgo = GenAlgo.NewGenAlgo(120, 120, workingCtx, fittestCtx);
