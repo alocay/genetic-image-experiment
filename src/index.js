@@ -56,7 +56,6 @@ class GenAlgo {
         }
         
         this.population.nextGeneration(newGen);
-        console.log(fittest);
         return [this.population.getNumOfPolygons(), fittest.score];
     }
 }

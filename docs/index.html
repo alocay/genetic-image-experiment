@@ -7,7 +7,8 @@
             $(document).ready(function() {
                 const genDiv = $("#gen");
                 const polyDiv = $("#poly");
-                const scoreDiv = $("#score");
+                const errorDiv = $("#error");
+                const rateDiv = $("#rate");
                 const runButton = $("#genp");
                 const goalCtx = $("#goal")[0].getContext("2d");
                 const workingCtx = $("#working")[0].getContext("2d");
@@ -16,6 +17,8 @@
                 
                 let count = 1;
                 let running = false;
+                let prevDelta = 0;
+                let gensSinceLastErrorChange = 1;
                 
                 function createGoalPoly() {
                     goalCtx.fillStyle = '#ff0000';
@@ -51,7 +54,17 @@
                         const stats = genalgo.runOnce(goalCtx);
                         genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                         polyDiv.text("Polys: " + stats[0]);
-                        scoreDiv.text("Delta: " + stats[1]);
+                        errorDiv.text("Error: " + stats[1]);
+                        
+                        if (stats[1] === prevDelta) {
+                            gensSinceLastErrorChange++;
+                        } else {
+                            const rate = (prevDelta - stats[1]) / gensSinceLastErrorChange;
+                            rateDiv.text("Rate of change: " + rate + " error/gen");
+                            gensSinceLastErrorChange = 1;
+                        }
+                        
+                        prevDelta = stats[1];
                     }
                     
                     window.requestAnimationFrame(runAlgoStep);
@@ -74,6 +87,7 @@
         <img id="goalimg" src="britto_apple_small.jpg" style="display: none;"/>
 		<div id="gen">Gen: </div>
         <div id="poly">Polys: </div>
-        <div id="score">Delta: </div>
+        <div id="error">Error: </div>
+        <div id="rate">Rate of change: </div>
 	</body>
 </html>

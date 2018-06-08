@@ -54,12 +54,12 @@ class Phenotype {
             child2geno[i] = tempC1;
         }
         
-        if (Math.random() > Config.MutationChance) {
+        if (Math.random() < Config.MutationChance) {
             const childToMutate = Helpers.RandomInteger(0, (child1geno.length - 1));
             child1geno[childToMutate].tryMutate();
         }
         
-        if (Math.random() > Config.MutationChance) {
+        if (Math.random() < Config.MutationChance) {
             const childToMutate = Helpers.RandomInteger(0, (child2geno.length - 1));
             child2geno[childToMutate].tryMutate();
         }
