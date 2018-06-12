@@ -2,6 +2,11 @@
 
 import Config from './config.js';
 
+const markers = [];
+const perfMeasures = [[],[]];
+let currentPerfCounter = 1;
+let gathered = {};
+
 class Helpers {
 	static Apply(ctx, polygon) {
         ctx.fillStyle = polygon.getFillStyle();
@@ -40,6 +45,58 @@ class Helpers {
 	
     static RandomNumber(min, max) {
         return Math.random() * (max - min) + min;
+    }
+    
+    static PerfStart(name, id) {
+        const m = id ? name + id : name;
+        performance.mark(m + ' start');
+        
+        if (!markers.includes(name)) {
+            markers.push(name);
+        }
+    }
+    
+    static PerfEnd(name, id) {
+        const m = id ? name + id : name;
+        performance.mark(m + ' end');
+        performance.measure(m, m + ' start', m + ' end');
+        const measures = performance.getEntriesByName(m);
+        
+        if (measures.length > 0) {
+            const measure = measures[0];
+            perfMeasures[currentPerfCounter].push({ name: m, duration: measure.duration });
+        }
+    }
+    
+    static PerfClear() {
+        performance.clearMarks();
+        performance.clearMeasures();
+        currentPerfCounter++;
+        perfMeasures[currentPerfCounter] = [];
+    }
+    
+    static GatherPerf() {
+        const measures = perfMeasures[currentPerfCounter];
+            
+        for (var j = 0; j < measures.length; j++) {
+            const measure = measures[j];
+            for (var k = 0; k < markers.length; k++) {
+                if (measure.name.includes(markers[k])) {
+                    if (!gathered[markers[k]] ) {
+                        gathered[markers[k]] = { name: markers[k], duration: measure.duration, avg: measure.duration, count: 1 };
+                    } else {
+                        let data = gathered[markers[k]];
+                        data.duration += measure.duration;
+                        data.count++;
+                        data.avg = data.duration / data.count;
+                    }
+                    
+                    break;
+                }
+            }
+        }
+        
+        return gathered;
     }
     
     static RandomInteger(min, max) {

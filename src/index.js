@@ -39,6 +39,9 @@ class GenAlgo {
     }
     
     runOnce(goalCtx) {
+        const genMarker = 'generation ' + this.getCurrentGeneration();
+        Helpers.PerfStart(genMarker);
+        
         this.population.scoreAll(goalCtx, this.workingCtx);
         
         const fittest = this.population.getFittest();
@@ -55,8 +58,15 @@ class GenAlgo {
             newGen.push(children[1]);
         }
         
+        const prevGenNum = this.getCurrentGeneration();
         this.population.nextGeneration(newGen);
-        return [this.population.getNumOfPolygons(), fittest.score];
+        
+        Helpers.PerfEnd(genMarker);
+        
+        const gathered = Helpers.GatherPerf();
+        Helpers.PerfClear();
+        
+        return [this.population.getNumOfPolygons(), fittest.score, gathered];
     }
 }
 

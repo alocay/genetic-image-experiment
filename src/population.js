@@ -11,12 +11,18 @@ class Population {
     }
     
     scoreAll(goalCtx, workingCtx) {
+        Helpers.PerfStart('population-scoreAll');
+        
         for(var i = 0; i < this.population.length; i++) {
             this.population[i].computeFitness(goalCtx, workingCtx);
         }
+        
+        Helpers.PerfEnd('population-scoreAll');
     }
     
-	selectRoulette(excludedId) {        
+	selectRoulette(excludedId) {
+        Helpers.PerfStart('population-select-roulette');
+        
 		this._calculateRouletteProbabilities();
 		
 		const prob = Math.random();
@@ -33,9 +39,13 @@ class Population {
 				}
 			}
 		}
+        
+        Helpers.PerfEnd('population-select-roulette');
 	}
 	
     selectRandScores(excludedId) {
+        Helpers.PerfStart('population-select-rand');
+        
 		let weightedScores = [];
         
         for(var i = 0; i < this.population.length; i++) {
@@ -52,12 +62,18 @@ class Population {
             }
         }
         
+        Helpers.PerfEnd('population-select-rand');
+        
         return best;
     }
     
     getFittest() {
+        Helpers.PerfStart('population-get-fittest');
+        
 		this.population.sort(this._compareForFittest);
 		return this.population[0];
+        
+        Helpers.PerfStart('population-get-fittest');
     }
     
     nextGeneration(gen) {
