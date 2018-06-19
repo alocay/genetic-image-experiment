@@ -1,7 +1,13 @@
 import Polygon from './polygon.js';
 import Helpers from './helpers.js';
 import Config from './config.js';
+import GPU from 'gpu.js';
 
+
+const gpu = new GPU();
+const kernel = gpu.createKernel(function(a, b) {
+	return a[this.thread.x] - b[this.thread.x];
+}).setOutput([3]);
 
 class Phenotype {
     constructor(options) {
