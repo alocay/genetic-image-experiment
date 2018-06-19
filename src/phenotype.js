@@ -27,6 +27,8 @@ class Phenotype {
     }
     
     computeFitness(goalCtx, workingCtx) {
+        Helpers.PerfStart('phenotype-fitness', this.id);
+        
         Helpers.ApplyPhenotype(workingCtx, this);
         
         const subsetGoalImageData = goalCtx.getImageData(0, 0, Config.Width, Config.Height);
@@ -44,52 +46,69 @@ class Phenotype {
                 Math.abs(subsetGoalImageData.data[a_offset] - subsetWorkingImageData.data[a_offset]);
         }
         
-        Helpers.Clear(workingCtx, Config.Width, Config.Height);
+        Helpers.Clear(workingCtx, Config.Width, Config.Height);        
+        Helpers.PerfEnd('phenotype-fitness', this.id);
+        
         this.score = totalError;
     }
     
     breed(other) {
+        Helpers.PerfStart('phenotype-breed', this.id);
+        
         let child1geno = this.cloneGenotype();
         let child2geno = other.cloneGenotype();
         const crossoverIndex = Helpers.RandomInteger(0, child1geno.length);
         
         // Swap the polygons
         for(var i = 0; i < crossoverIndex; i++) {
-            const tempC1 = child1geno[i].clone();
-            child1geno[i] = child2geno[i].clone();
+            const tempC1 = child1geno[i].clone(this.id + '-' + i + '-' + Helpers.RandomInteger(0,10000));
+            child1geno[i] = child2geno[i].clone(this.id + '-' + i + '-' + Helpers.RandomInteger(0,10000));
             child2geno[i] = tempC1;
         }
         
         if (Math.random() < Config.MutationChance) {
             const childToMutate = Helpers.RandomInteger(0, (child1geno.length - 1));
-            child1geno[childToMutate].tryMutate();
+            const cid = this.id + '-' + childToMutate + '-' + Helpers.RandomInteger(0, 10000);
+            child1geno[childToMutate].tryMutate(cid);
         }
         
         if (Math.random() < Config.MutationChance) {
             const childToMutate = Helpers.RandomInteger(0, (child2geno.length - 1));
-            child2geno[childToMutate].tryMutate();
+            const cid = this.id + '-' + childToMutate + '-' + Helpers.RandomInteger(0, 10000);
+            child2geno[childToMutate].tryMutate(cid);
         }
 		
         const child1 = new Phenotype({ index: this.index, generation: (this.generation + 1), genotype: child1geno });
         const child2 = new Phenotype({ index: other.index, generation: (other.generation + 1), genotype: child2geno });
         
+        Helpers.PerfEnd('phenotype-breed', this.id);
+        
         return [child1, child2]
     }
     
     cloneGenotype() {
+        Helpers.PerfStart('phenotype-clonegeno', this.id);
+        
         let clonedGeno = [];
         
         for(var i = 0; i < this.genotype.length; i++) {
-            clonedGeno[i] = this.genotype[i].clone();
+            const cid = this.id + '-' + i + '-' + Helpers.RandomInteger(0, 10000);
+            clonedGeno[i] = this.genotype[i].clone(cid);
         }
+        
+        Helpers.PerfEnd('phenotype-clonegeno', this.id);
         
         return clonedGeno;
     }
     
     _generate(options) {
+        Helpers.PerfStart('phenotype-generate', this.id);
+        
         for (var i = 0; i < Config.NumOfPolygons; i++) {
             this.genotype.push(new Polygon(options));
         }
+        
+        Helpers.PerfEnd('phenotype-generate', this.id);
     }
 }
 

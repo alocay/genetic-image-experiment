@@ -10,6 +10,7 @@
                 const errorDiv = $("#error");
                 const rateDiv = $("#rate");
                 const runButton = $("#genp");
+                const perfDiv = $("#perf");
                 const goalCtx = $("#goal")[0].getContext("2d");
                 const workingCtx = $("#working")[0].getContext("2d");
                 const fittestCtx = $("#fittest")[0].getContext("2d");
@@ -49,12 +50,36 @@
                 
                 const genalgo = GenAlgo.NewGenAlgo(imggoal.width, imggoal.height, workingCtx, fittestCtx);
                 
+                function displayPerf(perf) {
+                    if (!perf) return;
+                    
+                    let perfStats = "<table><thead><tr><td>Name</td><td>Avg</td><td>Total Duration</td></tr></thead><tbody>";
+                    const markers = Object.keys(perf);
+                    
+                    for(var i = 0; i < markers.length; i++) {
+                        const name = perf[markers[i]].name;
+                        const duration = perf[markers[i]].duration;
+                        const avg = perf[markers[i]].avg;
+                        
+                        if (name.includes('generation')) continue;
+                        
+                        perfStats += "<tr>";
+                        
+                        perfStats += "<td>" + name + "</td><td>" + avg + "</td><td>" + duration + "</td></tr>";
+                    }
+                    
+                    perfStats += "</tbody></table>";
+                    
+                    perfDiv.html(perfStats);
+                }
+                
                 function runAlgoStep() {
                     if (genalgo.isRunning()) {
                         const stats = genalgo.runOnce(goalCtx);
                         genDiv.text("Gen: " + genalgo.getCurrentGeneration());
                         polyDiv.text("Polys: " + stats[0]);
                         errorDiv.text("Error: " + stats[1]);
+                        displayPerf(stats[2]);
                         
                         if (stats[1] === prevDelta) {
                             gensSinceLastErrorChange++;
@@ -89,5 +114,6 @@
         <div id="poly">Polys: </div>
         <div id="error">Error: </div>
         <div id="rate">Rate of change: </div>
+        <div id="perf"></div>
 	</body>
 </html>

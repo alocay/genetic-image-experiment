@@ -40,7 +40,9 @@ class Polygon {
 		return 'rgba(' + this.color[0] + ',' + this.color[1] + ',' + this.color[2] + ',' + this.color[3] + ')';
 	}
 	
-    tryMutate() {
+    tryMutate(id) {
+        Helpers.PerfStart('polygon-mutate', id);
+        
         const chance = Math.random();
         const typeProbs = this._createMutationTypeProbabilityBuckets();
         
@@ -51,6 +53,8 @@ class Polygon {
         } else if (chance < typeProbs[2].prob) {
             typeProbs[2].action();
         }
+        
+        Helpers.PerfEnd('polygon-mutate', id);
         
         /*
         if (chance < Config.ColorMutationChance) {
@@ -150,7 +154,8 @@ class Polygon {
         }
     }
     
-    clone() {
+    clone(id) {
+        Helpers.PerfStart('polygon-clone', id);
         let options = {
             width: Config.width,
             height: Config.height,
@@ -165,6 +170,7 @@ class Polygon {
             options.vertices.push(new Point(v.X, v.Y, v.angle))
         }
         
+        Helpers.PerfEnd('polygon-clone', id);
         return new Polygon(options);
     }
     
