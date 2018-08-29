@@ -14,7 +14,7 @@ class Population {
         Helpers.PerfStart('population-scoreAll');
         
         for(var i = 0; i < this.population.length; i++) {
-            this.population[i].computeFitness(goalCtx, workingCtx);
+            this.population[i].computeFitnessGpu(goalCtx, workingCtx);
         }
         
         Helpers.PerfEnd('population-scoreAll');

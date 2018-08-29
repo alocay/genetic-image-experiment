@@ -1,13 +1,9 @@
 import Polygon from './polygon.js';
 import Helpers from './helpers.js';
 import Config from './config.js';
-import GPU from 'gpu.js';
-
+import GPU, { input } from 'gpu.js';
 
 const gpu = new GPU();
-const kernel = gpu.createKernel(function(a, b) {
-	return a[this.thread.x] - b[this.thread.x];
-}).setOutput([3]);
 
 class Phenotype {
     constructor(options) {
@@ -17,6 +13,8 @@ class Phenotype {
 		this.index = options.index;
 		this.id = Helpers.RandomInteger(1, 10000) + "_" + this.generation + "_" + this.index;
         this.mutationChance = Config.MutationChance;
+        this.deltaKernel = null;
+        this.initKernel();
         
         if (options.genotype) {
             this.genotype = options.genotype;
@@ -24,6 +22,13 @@ class Phenotype {
             this.genotype = [];
             this._generate(options);
         }
+    }
+    
+    initKernel() {
+        const total = Config.Width * Config.Height * 4;
+        this.deltaKernel = gpu.createKernel(function(a, b) {
+            return a[this.thread.x] - b[this.thread.x];
+        }).setOutput([total]);
     }
     
     computeFitness(goalCtx, workingCtx) {
@@ -45,6 +50,23 @@ class Phenotype {
                 Math.abs(subsetGoalImageData.data[b_offset] - subsetWorkingImageData.data[b_offset]) + 
                 Math.abs(subsetGoalImageData.data[a_offset] - subsetWorkingImageData.data[a_offset]);
         }
+        
+        Helpers.Clear(workingCtx, Config.Width, Config.Height);        
+        Helpers.PerfEnd('phenotype-fitness', this.id);
+        
+        this.score = totalError;
+    }
+    
+    computeFitnessGpu(goalCtx, workingCtx) {
+        Helpers.PerfStart('phenotype-fitness', this.id);
+        
+        Helpers.ApplyPhenotype(workingCtx, this);
+        
+        const subsetGoalImageData = goalCtx.getImageData(0, 0, Config.Width, Config.Height);
+        const subsetWorkingImageData = workingCtx.getImageData(0, 0, Config.Width, Config.Height);
+        
+        const deltaMatrix = this.deltaKernel(subsetGoalImageData.data, subsetWorkingImageData.data);
+        const totalError = deltaMatrix.reduce((a, c) => a + c);
         
         Helpers.Clear(workingCtx, Config.Width, Config.Height);        
         Helpers.PerfEnd('phenotype-fitness', this.id);
