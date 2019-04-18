@@ -84,7 +84,7 @@
                         if (stats[1] === prevDelta) {
                             gensSinceLastErrorChange++;
                         } else {
-                            const rate = (prevDelta - stats[1]) / gensSinceLastErrorChange;
+                            const rate = Math.abs(prevDelta - stats[1]) / gensSinceLastErrorChange;
                             rateDiv.text("Rate of change: " + rate + " error/gen");
                             gensSinceLastErrorChange = 1;
                         }

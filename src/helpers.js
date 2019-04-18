@@ -116,6 +116,55 @@ class Helpers {
         
         return out;
     }
+    
+    static GenerateHistograms(ctx) {
+        const histograms = { 
+            red: [0, 0, 0, 0],
+            green: [0, 0, 0, 0],
+            blue: [0, 0, 0, 0],
+            redNorm: [0, 0, 0, 0],
+            greenNorm: [0, 0, 0, 0],
+            blueNorm: [0, 0, 0, 0],
+            direction: null,
+            scale: null
+        };
+        
+        const totalPixels = Config.Width * Config.Height;
+        const ctxData = ctx.getImageData(0, 0, Config.Width, Config.Height);
+        
+        for(var i = 0; i < ctxData.data.length; i+=4) {
+            const rval = ctxData.data[i];
+            const gval = ctxData.data[i+1];
+            const bval = ctxData.data[i+2];
+            const ri = this.CalculateBucketIndex(rval);
+            const gi = this.CalculateBucketIndex(gval);
+            const bi = this.CalculateBucketIndex(bval);
+            
+            histograms.red[ri]++;
+            histograms.green[gi]++;
+            histograms.blue[bi]++;
+        }
+        
+        for (var i = 0; i < 4; i++) {
+            histograms.redNorm[i] = histograms.red[i] / totalPixels;
+            histograms.greenNorm[i] = histograms.green[i] / totalPixels;
+            histograms.blueNorm[i] = histograms.blue[i] / totalPixels;
+        }
+        
+        return histograms;
+    }
+    
+    static CalculateBucketIndex(value) {
+        if (value < 64) {
+            return 0;
+        } else if (value < 128) {
+            return 1;
+        } else if (value < 192) {
+            return 2;
+        } else {
+            return 3;
+        }
+    }
 }
 
 export default Helpers;

@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "dat.gui": "^0.7.2",
-    "gpu.js": "^1.4.3"
+    "gpu.js": "^1.4.3",
+    "sobel": "0.0.11"
   }
 }

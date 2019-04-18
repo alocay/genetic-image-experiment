@@ -40,6 +40,8 @@ class Phenotype {
         const subsetWorkingImageData = workingCtx.getImageData(0, 0, Config.Width, Config.Height);
         
         let totalError = 0;
+        
+        Helpers.PerfStart('fitness-loop', this.id);
         for (var i = 0; i < subsetGoalImageData.data.length; i+=4) {
             const g_offset = i + 1;
             const b_offset = i + 2;
@@ -50,6 +52,7 @@ class Phenotype {
                 Math.abs(subsetGoalImageData.data[b_offset] - subsetWorkingImageData.data[b_offset]) + 
                 Math.abs(subsetGoalImageData.data[a_offset] - subsetWorkingImageData.data[a_offset]);
         }
+        Helpers.PerfEnd('fitness-loop', this.id);
         
         Helpers.Clear(workingCtx, Config.Width, Config.Height);        
         Helpers.PerfEnd('phenotype-fitness', this.id);
@@ -58,7 +61,7 @@ class Phenotype {
     }
     
     computeFitnessGpu(goalCtx, workingCtx) {
-        Helpers.PerfStart('phenotype-fitness', this.id);
+        Helpers.PerfStart('phenotype-fitness-gpu', this.id);
         
         Helpers.ApplyPhenotype(workingCtx, this);
         
@@ -69,9 +72,27 @@ class Phenotype {
         const totalError = deltaMatrix.reduce((a, c) => a + c);
         
         Helpers.Clear(workingCtx, Config.Width, Config.Height);        
-        Helpers.PerfEnd('phenotype-fitness', this.id);
+        Helpers.PerfEnd('phenotype-fitness-gpu', this.id);
         
         this.score = totalError;
+    }
+    
+    computeFitnessHisto(goalCtx, workingCtx, goalHisto) {
+        Helpers.PerfStart('phenotype-fitness-histo', this.id);
+        
+        Helpers.ApplyPhenotype(workingCtx, this);
+        
+        const workHisto = Helpers.GenerateHistograms(workingCtx);
+        
+        let totalError = 0;
+        for (var i = 0; i < goalHisto.redNorm.length; i++) { 
+            totalError += Math.abs(goalHisto.redNorm[i] - workHisto.redNorm[i]) + Math.abs(goalHisto.greenNorm[i] - workHisto.greenNorm[i]) + Math.abs(goalHisto.blueNorm[i] - workHisto.blueNorm[i]);
+        }
+        
+        Helpers.Clear(workingCtx, Config.Width, Config.Height);
+        this.score = totalError;
+        
+        Helpers.PerfEnd('phenotype-fitness-histo', this.id);
     }
     
     breed(other) {

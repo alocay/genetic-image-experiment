@@ -1,20 +1,26 @@
 import Phenotype from './phenotype.js';
 import Helpers from './helpers.js';
 import Config from './config.js';
+import Sobel from 'sobel';
 
 class Population {
     constructor(options) {
         this.population = [];
 		this.generation = 1;
 		this.probabilitiesCalced = false;
+        this.goalHistograms = null;
         this._generate(options);
     }
     
-    scoreAll(goalCtx, workingCtx) {
+    scoreAll(goalCtx, workingCtx) {        
+        if (!this.goalHistograms) {
+            this.goalHistograms = Helpers.GenerateHistograms(goalCtx);
+        }
+        
         Helpers.PerfStart('population-scoreAll');
         
         for(var i = 0; i < this.population.length; i++) {
-            this.population[i].computeFitnessGpu(goalCtx, workingCtx);
+            this.population[i].computeFitness(goalCtx, workingCtx, this.goalHistograms);
         }
         
         Helpers.PerfEnd('population-scoreAll');
@@ -70,7 +76,8 @@ class Population {
     getFittest() {
         Helpers.PerfStart('population-get-fittest');
         
-		this.population.sort(this._compareForFittest);
+		this.population.sort(this._compareLowestFirst);
+        
 		return this.population[0];
         
         Helpers.PerfStart('population-get-fittest');
@@ -111,9 +118,13 @@ class Population {
 		return 0;
 	}
 	
-	_compareForFittest(a, b) {
+	_compareHighestFirst(a, b) {
         return a.score - b.score;
 	}
+    
+    _compareLowestFirst(a, b) {
+        return b.score - a.score;
+    }
 	
     _generate(options) {
         for(var i = 0; i < Config.PopSize; i++) {
